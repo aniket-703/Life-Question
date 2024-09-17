@@ -152,32 +152,56 @@
     const successAudio = document.getElementById("successAudio");
     const container = document.querySelector(".container");
 
+    let previousPosition = { top: 0, left: 0 }; // Store previous position
+
     noButton.addEventListener("mouseenter", () => {
       const containerRect = container.getBoundingClientRect();
       const buttonWidth = noButton.offsetWidth;
       const buttonHeight = noButton.offsetHeight;
 
-      // Define limits for movement
       const maxTop = Math.min(0.6 * window.innerHeight - buttonHeight, containerRect.height - buttonHeight);
       const maxLeft = Math.min(0.6 * window.innerWidth - buttonWidth, containerRect.width - buttonWidth);
 
-      // Define random positions for the button to move along the edges of the container
-      const edges = ['top', 'right', 'bottom', 'left'];
-      const randomEdge = edges[Math.floor(Math.random() * edges.length)];
+      let newPosition = {};
+      
+      // Function to generate random positions and ensure they are far enough from the previous position
+      const generateNewPosition = () => {
+        const edges = ['top', 'right', 'bottom', 'left'];
+        const randomEdge = edges[Math.floor(Math.random() * edges.length)];
 
-      if (randomEdge === 'top') {
-        noButton.style.top = '0px';
-        noButton.style.left = `${Math.random() * maxLeft}px`;
-      } else if (randomEdge === 'right') {
-        noButton.style.top = `${Math.random() * maxTop}px`;
-        noButton.style.left = `${containerRect.width - buttonWidth}px`;
-      } else if (randomEdge === 'bottom') {
-        noButton.style.top = `${containerRect.height - buttonHeight}px`;
-        noButton.style.left = `${Math.random() * maxLeft}px`;
-      } else if (randomEdge === 'left') {
-        noButton.style.top = `${Math.random() * maxTop}px`;
-        noButton.style.left = '0px';
-      }
+        if (randomEdge === 'top') {
+          newPosition.top = 0;
+          newPosition.left = Math.random() * maxLeft;
+        } else if (randomEdge === 'right') {
+          newPosition.top = Math.random() * maxTop;
+          newPosition.left = containerRect.width - buttonWidth;
+        } else if (randomEdge === 'bottom') {
+          newPosition.top = containerRect.height - buttonHeight;
+          newPosition.left = Math.random() * maxLeft;
+        } else if (randomEdge === 'left') {
+          newPosition.top = Math.random() * maxTop;
+          newPosition.left = 0;
+        }
+      };
+
+      // Function to calculate distance between two points
+      const calculateDistance = (pos1, pos2) => {
+        const dx = pos1.left - pos2.left;
+        const dy = pos1.top - pos2.top;
+        return Math.sqrt(dx * dx + dy * dy);
+      };
+
+      // Move the button until a sufficient distance is achieved
+      do {
+        generateNewPosition();
+      } while (calculateDistance(newPosition, previousPosition) < 100); // 100px is the minimum distance threshold
+
+      // Apply new position
+      noButton.style.top = `${newPosition.top}px`;
+      noButton.style.left = `${newPosition.left}px`;
+
+      // Update the previous position
+      previousPosition = { ...newPosition };
     });
 
     yesButton.addEventListener("click", () => {
@@ -210,6 +234,7 @@
       };
 
       createHeart();
+      
       // Notify via Google Form submission
       fetch('https://docs.google.com/forms/d/e/1FAIpQLSdTPcZJJM9WE_4bcvgZYLanUJj-cI8xKDmWmzvRtGBim5kbcQ/formResponse', {
         method: 'POST',
