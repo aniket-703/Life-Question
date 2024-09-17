@@ -211,16 +211,18 @@
 
       createHeart();
       // Notify via Google Form submission
-      fetch('https://docs.google.com/forms/d/e/1FAIpQLSdTPcZJJM9WE_4bcvgZYLanUJj-cI8xKDmWmzvRtGBim5kbcQ/viewform?usp=sf_link', {
+      fetch('https://docs.google.com/forms/d/e/1FAIpQLSdTPcZJJM9WE_4bcvgZYLanUJj-cI8xKDmWmzvRtGBim5kbcQ/formResponse', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: new URLSearchParams({
-          'entry.377051285: yes' // Replace with your form entry field ID
+          'entry.377051285': 'Yes Clicked' // Correct form entry field ID
         })
       }).then(() => {
         console.log('Notification sent');
+      }).catch((error) => {
+        console.error('Error sending notification:', error);
       });
     });
   </script>
