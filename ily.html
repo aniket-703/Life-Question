@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Question</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      position: relative; /* Required for ::before positioning */
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('bg1.jpg') no-repeat center center fixed; /* Background image */
+      background-size: cover; /* Ensures the image covers the entire background */
+      opacity: 0.75; /* Adjust opacity here */
+      z-index: -1; /* Make sure the background is behind the content */
+    }
+
+    .container {
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background for readability */
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 1100px;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: #333;
+      font-weight: 400;
+    }
+
+    .buttons {
+      position: relative;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, left 0.5s ease, top 0.5s ease;
+      position: absolute;
+      min-width: 100px;
+    }
+
+    #yesButton {
+      background-color: #4CAF50;
+      color: white;
+      left: 20%;
+      top: 0;
+    }
+
+    #yesButton:hover {
+      background-color: #45a049;
+    }
+
+    #noButton {
+      background-color: #f44336;
+      color: white;
+      left: 60%;
+      top: 0;
+    }
+
+    #noButton:hover {
+      background-color: #e53935;
+    }
+
+    /* Subtle hover effect */
+    button:hover {
+      opacity: 0.9;
+    }
+
+    /* Add styles for hearts */
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      transform: rotate(-45deg); /* Rotate the heart */
+      z-index: 1000;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: 10px;
+      top: 0;
+    }
+
+    @keyframes float {
+      0% {
+        transform: scale(0.5) rotate(-45deg) translateY(0); /* Start from the bottom */
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1) rotate(-45deg) translateY(-100vh); /* Move straight to the top */
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>If I promised to make you smile for the rest of your life, would you stay by my side?</h1>
+    <div class="buttons">
+      <button id="yesButton">Yes</button>
+      <button id="noButton">No</button>
+    </div>
+  </div>
+  
+  <!-- Audio element -->
+  <audio id="successAudio" src="audio.mp3"></audio>
+  
+  <script>
+    const noButton = document.getElementById("noButton");
+    const yesButton = document.getElementById("yesButton");
+    const successAudio = document.getElementById("successAudio");
+    const container = document.querySelector(".container");
+
+    noButton.addEventListener("mouseenter", () => {
+      const containerRect = container.getBoundingClientRect();
+      const buttonWidth = noButton.offsetWidth;
+      const buttonHeight = noButton.offsetHeight;
+
+      // Define limits for movement
+      const maxTop = Math.min(0.6 * window.innerHeight - buttonHeight, containerRect.height - buttonHeight);
+      const maxLeft = Math.min(0.6 * window.innerWidth - buttonWidth, containerRect.width - buttonWidth);
+
+      // Define random positions for the button to move along the edges of the container
+      const edges = ['top', 'right', 'bottom', 'left'];
+      const randomEdge = edges[Math.floor(Math.random() * edges.length)];
+
+      if (randomEdge === 'top') {
+        noButton.style.top = '0px';
+        noButton.style.left = `${Math.random() * maxLeft}px`;
+      } else if (randomEdge === 'right') {
+        noButton.style.top = `${Math.random() * maxTop}px`;
+        noButton.style.left = `${containerRect.width - buttonWidth}px`;
+      } else if (randomEdge === 'bottom') {
+        noButton.style.top = `${containerRect.height - buttonHeight}px`;
+        noButton.style.left = `${Math.random() * maxLeft}px`;
+      } else if (randomEdge === 'left') {
+        noButton.style.top = `${Math.random() * maxTop}px`;
+        noButton.style.left = '0px';
+      }
+    });
+
+    yesButton.addEventListener("click", () => {
+      successAudio.play(); // Play the audio
+
+      // Create hearts with delay
+      const totalHearts = 75;
+      let count = 0;
+
+      const createHeart = () => {
+        if (count >= totalHearts) return; // Stop creating hearts if we've reached the total count
+
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.style.left = `${Math.random() * 100}vw`;
+        heart.style.top = `90vh`; // Start from 90% from the bottom
+        document.body.appendChild(heart);
+
+        // Animate heart
+        heart.style.animation = `float 4s ease-in-out forwards`; // Extend duration
+
+        // Remove heart after animation
+        setTimeout(() => {
+          heart.remove();
+        }, 4000); // Adjust timeout to match the duration of the animation
+
+        count++;
+        // Delay the creation of the next heart
+        setTimeout(createHeart, Math.random() * 1000);
+      };
+
+      createHeart();
+    });
+  </script>
+</body>
+</html>
